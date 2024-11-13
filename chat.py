@@ -14,12 +14,12 @@ class State(TypedDict):
     messages: Annotated[Sequence[BaseMessage], add_messages]
     character: str
 
-
+load_dotenv()
 OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY")
 
-os.environ["OPENAI_API_KEY"] = OPENAI_API_KEY
+# os.environ["OPENAI_API_KEY"] = OPENAI_API_KEY
 
-model = ChatOpenAI(model="gpt-3.5-turbo")
+model = ChatOpenAI(model="gpt-3.5-turbo", api_key=OPENAI_API_KEY)
 
 # model.invoke([HumanMessage(content="Hi! I'm Bob")])
 
@@ -58,7 +58,7 @@ def get_response(input_text, character):
     output = app.invoke({"messages": input_messages, "character": character}, config)
     return output["messages"][-1].content
 
-workflow = StateGraph(state_schema=MessagesState)
+workflow = StateGraph(state_schema=State)
 workflow.add_edge(START, 'model')
 workflow.add_node("model", call_model)
 
@@ -73,5 +73,5 @@ config = {"configurable": {"thread_id": "abc123"}}
 #     config = {"configurable": {"thread_id": "abc123"}}
 #     query = input('message: ')
 #     input_messages = [HumanMessage(query)]
-#     output = app.invoke({"messages": input_messages}, config)
+#     output = app.invoke({"messages": input_messages, "character": "해리포터"}, config)
 #     print(output["messages"][-1].content)
